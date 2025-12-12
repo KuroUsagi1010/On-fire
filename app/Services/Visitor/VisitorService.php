@@ -45,7 +45,10 @@ class VisitorService
         VisitRecord::create([
             'site_page_id' => $page->getKey(),
             'status' => $response->getStatusCode(),
-            'duration' => round($response->transferStats->getTransferTime() * 1000)
+            'duration_ms' => round(($response->handlerStats()['total_time'] ?? 0) * 1000),
+            'content_length' => $response->getBody()->getSize(),
+            'has_error' => ! $response->successful(),
+            'has_met_expected_status' => ! $isDown,
         ]);
     }
 }

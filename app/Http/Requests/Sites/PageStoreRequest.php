@@ -29,7 +29,7 @@ class PageStoreRequest extends FormRequest
             'check_interval_seconds' => ['nullable', 'integer'],
             'timeout_seconds' => ['nullable', 'integer'],
             'verify_ssl' => ['nullable', 'boolean'],
-            'expected_status' => ['array', 'nullable'],
+            'expected_status' => ['array', 'required'],
         ];
     }
 

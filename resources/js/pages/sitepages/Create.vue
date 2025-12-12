@@ -6,8 +6,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import InputError from '@/components/InputError.vue';
 import { Spinner } from '@/components/ui/spinner';
-import { Label } from '@/components/ui/label'
-import { Switch } from '@/components/ui/switch'
+import { Label } from '@/components/ui/label';
+import { Switch } from '@/components/ui/switch';
 
 import { index as sitesIndex } from '@/actions/App/Http/Controllers/Site/SiteController';
 import { store } from '@/actions/App/Http/Controllers/SitePageController';
@@ -19,6 +19,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
+import { ref, watch } from 'vue';
 
 const props = defineProps<{
     site: { id: number | string; display_name?: string | null };
@@ -45,6 +46,8 @@ const availableStatus = {
     404: '404 Not Found',
     500: '500',
 };
+
+const selectedStatuses = ref([]);
 </script>
 
 <template>
@@ -148,11 +151,19 @@ const availableStatus = {
 
                         <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
                             <div class="flex items-center gap-2">
-                                <Switch id="paused" name="paused" data-state="unchecked"  />
+                                <Switch
+                                    id="paused"
+                                    name="paused"
+                                    data-state="unchecked"
+                                />
                                 <Label for="paused">Paused</Label>
                             </div>
                             <div class="flex items-center gap-2">
-                                <Switch id="verify_ssl" name="verify_ssl" data-state="unchecked"  />
+                                <Switch
+                                    id="verify_ssl"
+                                    name="verify_ssl"
+                                    data-state="unchecked"
+                                />
                                 <Label for="verify_ssl">Verify SSL</Label>
                             </div>
                         </div>
@@ -165,9 +176,11 @@ const availableStatus = {
                                 class="text-xs text-neutral-600 dark:text-neutral-300"
                                 >Expected HTTP status codes</label
                             >
-                            <Select :multiple="true">
+                            <Select v-model="selectedStatuses" :multiple="true">
                                 <SelectTrigger>
-                                    <SelectValue placeholder="Select a status" />
+                                    <SelectValue
+                                        placeholder="Select a status"
+                                    />
                                 </SelectTrigger>
                                 <SelectContent>
                                     <template
@@ -177,11 +190,19 @@ const availableStatus = {
                                         :key="statusCode"
                                     >
                                         <SelectItem :value="statusCode">
-                                            {{statusLabel}}
+                                            {{ statusLabel }}
                                         </SelectItem>
                                     </template>
                                 </SelectContent>
                             </Select>
+                            <!-- Send one hidden input per selected status so backend receives an array -->
+                            <template v-for="status in selectedStatuses" :key="`expected-${status}`">
+                                <input
+                                    type="hidden"
+                                    name="expected_status[]"
+                                    :value="status"
+                                />
+                            </template>
                             <InputError :message="errors.expected_status" />
                         </div>
 
