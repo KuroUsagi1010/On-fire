@@ -29,8 +29,16 @@ return new class extends Migration
 
             // Checking Configuration
             $table->unsignedSmallInteger('check_interval_seconds')->default(300); // 5 minutes
-            $table->unsignedSmallInteger('timeout_seconds')->default(30);
+            $table->unsignedTinyInteger('timeout_seconds')->default(30);
+
+            // Client configuration
             $table->boolean('verify_ssl')->default(true);
+            $table->string('http_method')->default('GET');
+            $table->json('payload')->nullable();
+            $table->string('authorization_type')->nullable(); // bearer|digest|basic|grant
+            $table->json('authorization_payload')->nullable();
+            $table->json('headers')->nullable();
+            $table->unsignedTinyInteger('retries')->default(0);
 
             $table->json('expected_status')->nullable();
 
@@ -41,9 +49,10 @@ return new class extends Migration
             $table->boolean('is_down')->default(false);
             $table->dateTime('down_at')->nullable();
 
+
             $table->timestamps();
 
-            $table->index('url');
+            $table->index(['url', 'next_check_at']);
         });
     }
 

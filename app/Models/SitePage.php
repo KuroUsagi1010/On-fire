@@ -18,6 +18,9 @@ class SitePage extends Model
     protected $casts = [
         'next_check_at' => 'datetime',
         'expected_status' => 'array',
+        'headers' => 'array',
+        'authorization_payload' => 'array',
+        'payload' => 'array',
     ];
 
     public function site(): BelongsTo
@@ -28,5 +31,10 @@ class SitePage extends Model
     public function records(): HasMany
     {
         return $this->hasMany(VisitRecord::class);
+    }
+
+    public function latestRecords(): HasMany
+    {
+        return $this->hasMany(VisitRecord::class)->limit(30)->latest();
     }
 }

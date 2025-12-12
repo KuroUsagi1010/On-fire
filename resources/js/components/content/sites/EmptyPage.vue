@@ -31,7 +31,9 @@ defineProps<{
         </EmptyHeader>
         <EmptyContent>
             <div class="flex gap-2">
-                <Link :href="create(site).url" method="get" as="button">Add Pages</Link>
+                <Link :href="create(site).url" method="get" as="button">
+                   <Button variant="secondary">Add Pages</Button>
+                </Link>
             </div>
         </EmptyContent>
     </Empty>

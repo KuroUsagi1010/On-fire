@@ -49,6 +49,7 @@ export interface Site {
     created_at: string,
     updated_at: string,
     page_count: number,
+    pages?: SitePage[]
 }
 
 export interface SitePage {
@@ -64,6 +65,12 @@ export interface SitePage {
     check_interval_seconds: number;
     timeout_seconds: number;
     verify_ssl: boolean;
+    http_method: string; // e.g., 'GET', 'POST'
+    payload: Record<string, unknown> | unknown[] | null;
+    authorization_type: string | null; // bearer | digest | basic | grant | etc.
+    authorization_payload: Record<string, unknown> | unknown[] | null;
+    headers: Record<string, string> | null;
+    retries: number;
     expected_status: number[] | null;
 
     // scheduling / status
@@ -77,6 +84,7 @@ export interface SitePage {
 
     // optional eager-loaded visit records summary (when included)
     records?: VisitRecord[];
+    latest_records?: VisitRecord[]
 }
 
 

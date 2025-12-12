@@ -10,7 +10,7 @@ import AppLayout from '@/layouts/AppLayout.vue';
 
 import { index, create } from '@/actions/App/Http/Controllers/Site/SiteController';
 import ProfileController from '@/actions/App/Http/Controllers/Settings/ProfileController';
-import type { BreadcrumbItem, Site, SitePage } from '@/types';
+import type { BreadcrumbItem, Site } from '@/types';
 import EmptyPage from '@/components/content/sites/EmptyPage.vue';
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -20,33 +20,17 @@ const breadcrumbs: BreadcrumbItem[] = [
     },
 ];
 
-const props = defineProps<{ sites: Site[], pages?: SitePage[] }>()
+defineProps<{ sites: Site[] }>()
 
 const expandedSites = ref<Set<string>>(new Set());
 
-const isLoading = ref(false);
-// Placeholder bar heights (px) for visit-statuses until VisitRecord data exists
 function toggleExpanded(siteId: string) {
     if (expandedSites.value.has(siteId)) {
         expandedSites.value.delete(siteId);
     } else {
         expandedSites.value.add(siteId);
-        const siteIdsArray = Array.from(expandedSites.value);
-        router.reload({
-            only: ['pages'],
-            data: { 'site_ids': siteIdsArray},
-            preserveState: true,
-            preserveScroll: true,
-            onStart: () => isLoading.value = true,
-            onFinish: () => { isLoading.value = false },
-        })
     }
 }
-
-function pagesFor(siteId: string) {
-    return (props.pages ?? []).filter((item) => siteId === item.site_id)
-}
-
 
 </script>
 
@@ -96,7 +80,7 @@ function pagesFor(siteId: string) {
                             <div class="flex h-11 cursor-pointer items-center gap-3 rounded-lg pr-2.5 pl-4 hover:bg-white/50 dark:hover:bg-white/2"    @click="toggleExpanded(site.id)">
                                <div class="flex flex-1 items-center gap-3">
 
-                                   <p class="text-sm font-thin inline-flex gap-2 items-center">{{site.display_name}} <SquareArrowOutUpRight size="16" /></p>
+                                   <p class="text-sm font-thin inline-flex gap-2 items-center"> <SquareArrowOutUpRight size="16" /> {{site.display_name}} </p>
                                </div>
                                 <p class="justify-self-end text-xs">{{site.page_count}} Pages</p>
                                 <button type="button" class="flex h-6 w-6 cursor-pointer items-center justify-center rounded-md dark:border dark:border-white/8 group-hover:text-blue-500 group-hover:dark:text-emerald-500 text-neutral-500 dark:text-neutral-500 dark:bg-white/3" :class="{
@@ -129,17 +113,17 @@ function pagesFor(siteId: string) {
                             </div>
                             <div class="expanded-state border-t-1 mx-4" v-show="expandedSites.has(site.id)">
                                 <div class="flex p-1 sm:py-2 flex-col gap-2">
-                                    <template v-if="pagesFor(site.id).length">
-                                        <template v-for="page in pagesFor(site.id)" :key="page.id">
+                                    <template v-if="site?.pages?.length">
+                                        <template v-for="page in site.pages" :key="page.id">
                                             <div class="text-sm text-neutral-700 dark:text-neutral-200 flex items-center border-b border-dashed pb-2 cursor-pointer hover:bg-gray-50/70 dark:hover:bg-white/20 rounded-md p-2 w-full gap-2">
                                                 <div class="h-2 w-2 rounded-full bg-red-500" :class="{ '!bg-green-300': !page.is_down }"></div>
                                                 {{ page.url }}
                                                 <div class="ml-auto flex items-center gap-6">
                                                     <!-- Visit status bars: green/red based on has_met_expected_status; neutral when no data -->
                                                     <div class="items-center gap-1 h-10 hidden sm:inline-flex">
-                                                        <template v-if="page.records && page.records.length">
+                                                        <template v-if="page.latest_records && page.latest_records.length">
                                                             <div
-                                                                v-for="record in page.records"
+                                                                v-for="record in page.latest_records"
                                                                 :key="record.id"
                                                                 class="w-1 h-6"
                                                                 :class="record.has_met_expected_status ? 'bg-emerald-400 dark:bg-emerald-400/60' : 'bg-red-400 dark:bg-red-400/60'"

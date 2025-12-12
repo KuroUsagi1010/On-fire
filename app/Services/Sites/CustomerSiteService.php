@@ -23,9 +23,11 @@ class CustomerSiteService
      * @param $siteId
      * @return Collection
      */
-    public function sites($siteId = null): Collection
+    public function sites($siteId = null, $relations = []): Collection
     {
         $query = Site::query()
+            ->withCount('pages')
+            ->with($relations)
             ->tap(new TeamFilter())
             ->tap(new SpecificSite($siteId));
 
@@ -35,6 +37,7 @@ class CustomerSiteService
     public function pages($siteIds = []): Collection
     {
         $query = SitePage::query()
+            ->withCount('records') // total records
             ->tap(new MultiSiteFilter($siteIds))
             ->tap(new SitePageTeamFilter())
             ->tap(new IncludeVisitRecords());
@@ -62,11 +65,16 @@ class CustomerSiteService
             'url' => $data['url'],
             'description' => data_get($data, 'description'),
             'paused' => (bool) data_get($data, 'paused', false),
-            'check_interval_seconds' => data_get($data, 'check_interval_seconds', 60),
-            'timeout_seconds' => data_get($data, 'timeout_seconds', 30),
-            'verify_ssl' => (bool) data_get($data, 'verify_ssl', false),
+            'check_interval_seconds' => $data['check_interval_seconds'] ?? 60,
+            'timeout_seconds' => $data['timeout_seconds'] ?? 30,
             'expected_status' => data_get($data, 'expected_status', [200]),
             'next_check_at' => data_get($data, 'next_check_at', now()->plus(minutes: 5)->startOfMinute()),
+            'verify_ssl' => (bool) data_get($data, 'verify_ssl', false),
+            'headers' => data_get($data, 'headers', []),
+            'payload' => data_get($data, 'payload', []),
+            'authorization_type' => data_get($data, 'authorization_type'),
+            'authorization_payload' => data_get($data, 'authorization_payload'),
+            'retries' => data_get($data, 'retries', 0),
             'is_down' => false,
             'down_at' => null,
         ]);

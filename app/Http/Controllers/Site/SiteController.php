@@ -14,8 +14,7 @@ class SiteController extends Controller
 
     public function index(Request $request, CustomerSiteService $customerSiteService) {
         return Inertia::render('site/Index', [
-            'sites' => $customerSiteService->sites(),
-            'pages' => fn() => $customerSiteService->pages($request->get('site_ids', []))
+            'sites' => $customerSiteService->sites(relations: ['pages.latestRecords']),
         ]);
     }
 
