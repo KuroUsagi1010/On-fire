@@ -27,7 +27,7 @@ return new class extends Migration
             $table->longText('response_body')->nullable();
 
             // Timestamps: match lightweight table style (created_at only)
-            $table->timestamp('created_at')->useCurrent();
+            $table->timestamps();
 
             // Optional time-based queries
             $table->index('created_at');

@@ -215,7 +215,7 @@ const selectedStatuses = ref([]);
                             <Button
                                 type="submit"
                                 class="inline-flex items-center"
-                                :class="{ 'disabled bg-red-900': processing }"
+                                :class="{ 'disabled': processing }"
                             >
                                 <Spinner v-if="processing" /> Save
                             </Button>

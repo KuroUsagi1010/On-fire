@@ -33,7 +33,7 @@ class SiteSeeder extends Seeder
         $now = now();
 
         $rows = [];
-        for ($i = 1; $i <= 5; $i++) {
+        for ($i = 1; $i <= 2; $i++) {
             $rows[] = [
                 'id' => (string) Str::uuid(),
                 'display_name' => "Example Site {$i}",

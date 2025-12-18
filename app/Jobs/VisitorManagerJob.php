@@ -25,6 +25,8 @@ class VisitorManagerJob implements ShouldQueue
     {
         $pages = $this->visitor->getPagesToVisit();
 
+        info("PAGES TO VISIT: ".count($pages));
+
         if(blank($pages)) return; // bail
 
         /**
@@ -46,7 +48,7 @@ class VisitorManagerJob implements ShouldQueue
     }
 
     /**
-     * @param Pool $pool
+     * @param Batch $batch
      * @param SitePage[] $pages
      * @return array
      */

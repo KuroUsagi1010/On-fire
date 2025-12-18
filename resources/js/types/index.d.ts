@@ -97,6 +97,16 @@ export interface VisitRecord {
     has_error: boolean;
     has_met_expected_status: boolean;
     created_at: string; // ISO datetime
+    payload?: VisitRecordPayload | null
+}
+
+
+export interface VisitRecordPayload {
+    id: number;
+    visit_record_id: number;
+    response_headers: Record<string, string> | null;
+    response_body: string | null;
+    created_at: string;
 }
 
 

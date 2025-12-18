@@ -12,10 +12,12 @@ import {
     index,
     create,
 } from '@/actions/App/Http/Controllers/Site/SiteController';
-import { create as createPage } from '@/actions/App/Http/Controllers/SitePageController';
+import { create as createPage, show as showPage } from '@/actions/App/Http/Controllers/SitePageController';
 import ProfileController from '@/actions/App/Http/Controllers/Settings/ProfileController';
 import type { BreadcrumbItem, Site } from '@/types';
 import EmptyPage from '@/components/content/sites/EmptyPage.vue';
+import ExpandClose from '@/components/svg/ExpandClose.vue';
+import ExpandOpen from '@/components/svg/ExpandOpen.vue';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -113,80 +115,8 @@ function toggleExpanded(siteId: string) {
                                             !expandedSites.has(site.id),
                                     }"
                                 >
-                                    <svg
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        width="8"
-                                        height="12"
-                                        viewBox="0 0 8 12"
-                                        fill="none"
-                                        v-show="expandedSites.has(site.id)"
-                                        style="display: none"
-                                    >
-                                        <g clip-path="url(#clip0_14550_6168)">
-                                            <path
-                                                d="M6.75 11.0001L4 8.25012L1.25 11.0001"
-                                                stroke="currentColor"
-                                                stroke-linecap="round"
-                                                stroke-linejoin="round"
-                                            ></path>
-                                            <path
-                                                d="M6.75 1.50012L4 4.25012L1.25 1.50012"
-                                                stroke="currentColor"
-                                                stroke-linecap="round"
-                                                stroke-linejoin="round"
-                                            ></path>
-                                        </g>
-                                        <defs>
-                                            <clipPath id="clip0_14550_6168">
-                                                <rect
-                                                    width="8"
-                                                    height="11"
-                                                    fill="white"
-                                                    style="
-                                                        fill: white;
-                                                        fill-opacity: 1;
-                                                    "
-                                                    transform="translate(0 0.500122)"
-                                                ></rect>
-                                            </clipPath>
-                                        </defs>
-                                    </svg>
-                                    <svg
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        width="12"
-                                        height="12"
-                                        viewBox="0 0 12 12"
-                                        fill="none"
-                                        v-show="!expandedSites.has(site.id)"
-                                    >
-                                        <g clip-path="url(#clip0_14550_6155)">
-                                            <path
-                                                d="M8.75 8.25012L6 11.0001L3.25 8.25012"
-                                                stroke="currentColor"
-                                                stroke-linecap="round"
-                                                stroke-linejoin="round"
-                                            ></path>
-                                            <path
-                                                d="M8.75 3.75012L6 1.00012L3.25 3.75012"
-                                                stroke="currentColor"
-                                                stroke-linecap="round"
-                                                stroke-linejoin="round"
-                                            ></path>
-                                        </g>
-                                        <defs>
-                                            <clipPath id="clip0_14550_6155">
-                                                <rect
-                                                    width="12"
-                                                    height="12"
-                                                    fill="white"
-                                                    style="
-                                                        fill: white;
-                                                        fill-opacity: 1;
-                                                    "
-                                                ></rect>
-                                            </clipPath>
-                                        </defs>
-                                    </svg>
+                                    <ExpandClose v-show="expandedSites.has(site.id)" />
+                                    <ExpandOpen v-show="!expandedSites.has(site.id)" />
                                 </button>
                             </div>
                             <div
@@ -244,11 +174,12 @@ function toggleExpanded(siteId: string) {
                                                             />
                                                         </template>
                                                     </div>
-                                                    <div
+                                                    <Link
+                                                        :href="showPage(page.id).url"
                                                         class="rounded-md border p-1 dark:border-white/10"
                                                     >
                                                         <Wrench :size="16" />
-                                                    </div>
+                                                    </Link>
                                                 </div>
                                             </div>
                                         </template>

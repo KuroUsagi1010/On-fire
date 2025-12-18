@@ -24,7 +24,7 @@ return new class extends Migration
             $table->boolean('has_error')->default(false);
             $table->boolean('has_met_expected_status')->default(false);
 
-            $table->timestamp('created_at')->useCurrent();
+            $table->timestamps();
 
             // fast queries
             $table->index(['site_page_id', 'created_at']);

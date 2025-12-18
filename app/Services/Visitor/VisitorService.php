@@ -6,6 +6,7 @@ use App\Filters\Pages\IsReadyForVisit;
 use App\Filters\Pages\ShouldBeActive;
 use App\Models\SitePage;
 use App\Models\VisitRecord;
+use App\Models\VisitRecordPayload;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Client\Response;
 
@@ -42,7 +43,7 @@ class VisitorService
             'next_check_at' => now()->plus(seconds: $page->check_interval_seconds)
         ]);
 
-        VisitRecord::create([
+        $record = VisitRecord::create([
             'site_page_id' => $page->getKey(),
             'status' => $response->getStatusCode(),
             'duration_ms' => round(($response->handlerStats()['total_time'] ?? 0) * 1000),
@@ -50,5 +51,16 @@ class VisitorService
             'has_error' => ! $response->successful(),
             'has_met_expected_status' => ! $isDown,
         ]);
+
+        try {
+            // TODO: hide sensitive headers
+            VisitRecordPayload::create([
+                'visit_record_id' => $record->getKey(),
+                'response_headers' => $response->headers(),
+                'response_body' => $response->body(),
+            ]);
+        } catch (\Throwable $e) {
+            // swallow payload errors to avoid impacting primary recording
+        }
     }
 }

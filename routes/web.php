@@ -47,6 +47,7 @@ Route::middleware(['auth'])
             ->name('pages.')
             ->group(function() {
                 Route::get('{site:id}/create', [SitePageController::class, 'create'])->name('create');
+                Route::get('{page:id}/show', [SitePageController::class, 'show'])->name('show');
                 Route::post('{site:id}/store', [SitePageController::class, 'store'])->name('store');
             });
 

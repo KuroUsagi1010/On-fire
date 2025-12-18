@@ -18,6 +18,7 @@ class DatabaseSeeder extends Seeder
             SiteSeeder::class,
             SitePageSeeder::class,
             VisitRecordSeeder::class,
+            VisitRecordPayloadSeeder::class,
         ]);
     }
 }
