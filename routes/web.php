@@ -54,7 +54,15 @@ Route::middleware(['auth'])
         Route::middleware(['verified'])
             ->group(function() {
                 Route::get('dashboard', function () {
-                    return Inertia::render('Dashboard');
+                    /** @var \App\Services\DashboardWidgetService $service */
+                    $service = app(\App\Services\DashboardWidgetService::class);
+                    return Inertia::render('Dashboard', [
+                        'widgets' => $service->resolve(),
+                    ]);
                 })->name('dashboard');
+
+                // One-click refresh to invalidate all dashboard widget caches for current team
+                Route::post('dashboard/refresh', \App\Http\Controllers\Dashboard\DashboardRefreshController::class)
+                    ->name('dashboard.refresh');
             });
-});
+    });

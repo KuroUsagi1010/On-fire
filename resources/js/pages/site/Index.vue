@@ -1,11 +1,9 @@
 <script setup lang="ts">
 import { ref } from 'vue';
-import { Form, Head, Link, router } from '@inertiajs/vue3';
+import { Head, Link, router } from '@inertiajs/vue3';
 import { Plus, SquareArrowOutUpRight, Wrench } from 'lucide-vue-next';
 
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import InputError from '@/components/InputError.vue';
 import AppLayout from '@/layouts/AppLayout.vue';
 
 import {
@@ -13,11 +11,11 @@ import {
     create,
 } from '@/actions/App/Http/Controllers/Site/SiteController';
 import { create as createPage, show as showPage } from '@/actions/App/Http/Controllers/SitePageController';
-import ProfileController from '@/actions/App/Http/Controllers/Settings/ProfileController';
 import type { BreadcrumbItem, Site } from '@/types';
 import EmptyPage from '@/components/content/sites/EmptyPage.vue';
 import ExpandClose from '@/components/svg/ExpandClose.vue';
 import ExpandOpen from '@/components/svg/ExpandOpen.vue';
+import FilterSites from '@/components/content/sites/FilterSites.vue';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -52,26 +50,7 @@ function toggleExpanded(siteId: string) {
                 <div class="flex flex-col gap-2">
                     <div class="mb-2 flex justify-between">
                         <div class="filters">
-                            <Form
-                                v-bind="ProfileController.update.form()"
-                                class="space-y-6"
-                                v-slot="{ errors }"
-                            >
-                                <div class="grid gap-2">
-                                    <Input
-                                        id="name"
-                                        class="mt-1 block h-8 w-full rounded-sm"
-                                        name="name"
-                                        required
-                                        autocomplete="name"
-                                        placeholder="Search Sites"
-                                    />
-                                    <InputError
-                                        class="mt-2"
-                                        :message="errors.name"
-                                    />
-                                </div>
-                            </Form>
+                            <FilterSites />
                         </div>
                         <Button
                             @click="router.get(create().url)"

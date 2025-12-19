@@ -111,3 +111,23 @@ export interface VisitRecordPayload {
 
 
 export type BreadcrumbItemType = BreadcrumbItem;
+
+// Dashboard widgets
+export type DashboardWidgetId = 'pages-total' | 'pages-on-fire' | string;
+export type DashboardWidgetTuple<D = Record<string, unknown>> = [DashboardWidgetId, D];
+export interface PagesTotalWidgetData {
+    total: number;
+    up: number;
+}
+
+export interface PagesOnFireWidgetItem {
+    id: string;
+    url: string;
+    status?: number | null;
+    expected?: number[] | null;
+}
+
+export interface PagesOnFireWidgetData {
+    count: number;
+    items: PagesOnFireWidgetItem[];
+}

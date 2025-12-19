@@ -13,8 +13,10 @@ class SiteController extends Controller
 {
 
     public function index(Request $request, CustomerSiteService $customerSiteService) {
+        // TODO: minify the records
         return Inertia::render('site/Index', [
-            'sites' => $customerSiteService->sites(relations: ['pages.latestRecords']),
+            'sites' => $customerSiteService
+                ->sites(relations: ['pages.latestRecords'], filters: $request->get('filters', [])),
         ]);
     }
 

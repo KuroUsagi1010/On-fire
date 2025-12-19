@@ -2,9 +2,10 @@
 
 namespace App\Services\Sites;
 
-use App\Filters\Pages\SitePageTeamFilter;
 use App\Filters\Pages\IncludeVisitRecords;
 use App\Filters\Pages\MultiSiteFilter;
+use App\Filters\Pages\SitePageTeamFilter;
+use App\Filters\Sites\SiteSearchFilter;
 use App\Filters\Sites\SpecificSite;
 use App\Filters\Sites\TeamFilter;
 use App\Models\Site;
@@ -26,12 +27,13 @@ class CustomerSiteService
      * @param $siteId
      * @return Collection
      */
-    public function sites($siteId = null, $relations = []): Collection
+    public function sites($siteId = null, $relations = [], $filters = []): Collection
     {
         $query = Site::query()
             ->withCount('pages')
             ->with($relations)
             ->tap(new TeamFilter)
+            ->tap(new SiteSearchFilter($filters))
             ->tap(new SpecificSite($siteId));
 
         return $query->get();
