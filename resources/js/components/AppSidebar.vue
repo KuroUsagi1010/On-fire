@@ -13,9 +13,10 @@ import {
 } from '@/components/ui/sidebar';
 import { dashboard } from '@/routes';
 import SiteController from '@/actions/App/Http/Controllers/Site/SiteController'
+import NotificationsChannelController from '@/actions/App/Http/Controllers/Channels/NotificationsChannelController';
 import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/vue3';
-import { BookOpen, Folder, LayoutGrid, Rss  } from 'lucide-vue-next';
+import { Bell, Folder, LayoutGrid, Rss  } from 'lucide-vue-next';
 import AppLogo from './AppLogo.vue';
 
 const mainNavItems: NavItem[] = [
@@ -28,19 +29,19 @@ const mainNavItems: NavItem[] = [
         title: 'Sites',
         href: SiteController.index(),
         icon: Rss,
+    },
+    {
+        title: 'Notification Channels',
+        href: NotificationsChannelController.index(),
+        icon: Bell,
     }
 ];
 
 const footerNavItems: NavItem[] = [
     {
         title: 'Github Repo',
-        href: 'https://github.com/laravel/vue-starter-kit',
+        href: 'https://github.com/KuroUsagi1010/On-fire',
         icon: Folder,
-    },
-    {
-        title: 'Documentation',
-        href: 'https://laravel.com/docs/starter-kits#vue',
-        icon: BookOpen,
     },
 ];
 </script>

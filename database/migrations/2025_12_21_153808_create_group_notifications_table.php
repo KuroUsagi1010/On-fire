@@ -11,18 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('sites', function (Blueprint $table) {
+        Schema::create('group_notifications', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->string("display_name");
-            $table->foreignUuid('team_id')
-                ->constrained('teams')
-                ->cascadeOnDelete();
-            $table->foreignUuid('user_id')
-                ->constrained('users')
-                ->nullOnDelete();
+            $table->string('name'); // tier 1 | LP Product 1 support | etc.
+            $table->foreignUuid('team_id')->constrained('teams')->cascadeOnDelete();
             $table->timestamps();
 
-            $table->index(['team_id', 'display_name']);
+            $table->index('name');
         });
     }
 
@@ -31,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('sites');
+        Schema::dropIfExists('group_notifications');
     }
 };

@@ -6,13 +6,13 @@ use App\Models\SitePage;
 use App\DTO\DashboardWidgetResult;
 use App\Filters\Pages\SitePageTeamFilter;
 use App\Contracts\DashboardWidget;
+use App\Services\Dashboard\WidgetDataService;
 
-class PagesTotalWidget implements DashboardWidget
+class PagesTotalWidget extends DashboardWidget
 {
-    /**
-     * Identifier used on the frontend to render the corresponding component.
-     */
-    public const ID = 'pages-total';
+    public function __construct(private readonly WidgetDataService $data)
+    {
+    }
 
     /**
      * Invoke the widget to return a typed DTO carrying id and data.
@@ -23,19 +23,8 @@ class PagesTotalWidget implements DashboardWidget
      */
     public function __invoke(): DashboardWidgetResult
     {
-        // Use SitePage.is_down which is maintained by the visitor job
-        $total = SitePage::query()
-            ->tap(new SitePageTeamFilter())
-            ->count();
+        $totals = $this->data->getTotals();
 
-        $up = SitePage::query()
-            ->tap(new SitePageTeamFilter())
-            ->where('is_down', false)
-            ->count();
-
-        return new DashboardWidgetResult(self::ID, [
-            'total' => $total,
-            'up' => $up,
-        ]);
+        return new DashboardWidgetResult($this->getId(), $totals);
     }
 }

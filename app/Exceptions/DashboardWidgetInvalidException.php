@@ -9,7 +9,7 @@ class DashboardWidgetInvalidException extends RuntimeException
     public static function notImplementingInterface(string $class): self
     {
         return new self(sprintf(
-            'Dashboard widget "%s" must implement App\\Contracts\\DashboardWidget.',
+            'Dashboard widget "%s" must extend App\\Contracts\\DashboardWidget.',
             $class
         ));
     }

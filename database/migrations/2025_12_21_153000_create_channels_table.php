@@ -11,18 +11,18 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('sites', function (Blueprint $table) {
+        Schema::create('channels', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->string("display_name");
+            $table->string('name')->nullable()->after('type');
+            $table->string('type'); // email | slack | discord
+            $table->json('config'); // we create a service that will validate the config based on the type
+            $table->boolean('active')->default(true);
             $table->foreignUuid('team_id')
                 ->constrained('teams')
                 ->cascadeOnDelete();
-            $table->foreignUuid('user_id')
-                ->constrained('users')
-                ->nullOnDelete();
             $table->timestamps();
 
-            $table->index(['team_id', 'display_name']);
+            $table->index('id');
         });
     }
 
@@ -31,6 +31,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('sites');
+        Schema::dropIfExists('channels');
     }
 };

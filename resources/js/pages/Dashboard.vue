@@ -37,12 +37,12 @@ async function refreshWidgets() {
 
 function resolveWidget([id, data]: DashboardWidgetTuple) {
   switch (id) {
-    case 'pages-total':
+    case 'pages-total-widget':
       return {
         is: PagesTotalWidget,
         data: data as PagesTotalWidgetData,
       }
-    case 'pages-on-fire':
+    case 'pages-on-fire-widget':
       return {
         is: PagesOnFireWidget,
         data: data as PagesOnFireWidgetData,

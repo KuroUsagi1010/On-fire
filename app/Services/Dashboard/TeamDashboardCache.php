@@ -2,6 +2,7 @@
 
 namespace App\Services\Dashboard;
 
+use App\Contracts\DashboardWidget;
 use Closure;
 use Illuminate\Support\Facades\Cache;
 
@@ -20,8 +21,7 @@ class TeamDashboardCache
      */
     public function key(string $teamId, string $widgetId): string
     {
-        $version = $this->getVersion($teamId);
-        return sprintf('%s:dashboard:v%s:widget:%s', $teamId, $version, $widgetId);
+        return sprintf('%s:dashboard:widget:%s', $teamId, $widgetId);
     }
 
     /**
@@ -32,54 +32,12 @@ class TeamDashboardCache
         return now()->addMinutes(30);
     }
 
-    /**
-     * Cache version key per team. Used to invalidate all widget caches at once.
-     */
-    public function versionKey(string $teamId): string
-    {
-        return sprintf('%s:dashboard:version', $teamId);
-    }
-
-    /**
-     * How long to keep the per-team dashboard cache version key.
-     * Using a TTL prevents unbounded growth of long-lived keys.
-     */
-    public function versionTtl(): \DateTimeInterface
-    {
-        return now()->addDays(14);
-    }
-
-    /**
-     * Get current cache version for a team. Defaults to 1 if missing.
-     */
-    public function getVersion(string $teamId): int
-    {
-        $key = $this->versionKey($teamId);
-        $version = Cache::get($key);
-        if (!is_int($version) || $version < 1) {
-            $version = 1;
-            Cache::put($key, $version, $this->versionTtl());
-        }
-        return $version;
-    }
-
-    /**
-     * Bump cache version for a team to invalidate all widget caches.
-     * Refreshes the TTL (sliding expiration) after the bump.
-     */
-    public function bumpVersion(string $teamId): void
-    {
-        $key = $this->versionKey($teamId);
-        if (!Cache::has($key)) {
-            Cache::put($key, 1, $this->versionTtl());
-        }
-        try {
-            Cache::increment($key);
-            $current = (int) Cache::get($key, 1);
-            Cache::put($key, $current, $this->versionTtl());
-        } catch (\Throwable $e) {
-            $current = (int) Cache::get($key, 1);
-            Cache::put($key, $current + 1, $this->versionTtl());
+    public function refresh($teamId) {
+        $dashboardWidgetService = resolve(DashboardWidgetService::class);
+        foreach ($dashboardWidgetService->widgets() as $widgetString) {
+            /** @var DashboardWidget $widget */
+            $widget = resolve($widgetString);
+            Cache::forget($this->key($teamId, $widget->getId()));
         }
     }
 
@@ -93,15 +51,5 @@ class TeamDashboardCache
     public function rememberWidget(string $teamId, string $widgetId, Closure $callback): mixed
     {
         return Cache::remember($this->key($teamId, $widgetId), $this->widgetTtl(), $callback);
-    }
-
-    /**
-     * Helper to put a widget value directly.
-     *
-     * @param mixed $value
-     */
-    public function putWidget(string $teamId, string $widgetId, mixed $value): void
-    {
-        Cache::put($this->key($teamId, $widgetId), $value, $this->widgetTtl());
     }
 }

@@ -1,6 +1,7 @@
 <?php
 
-use App\Http\Controllers\Site\SiteController;
+use App\Http\Controllers\Channels\NotificationsChannelController;
+use App\Http\Controllers\Dashboard\DashboardRefreshController;
 use App\Http\Controllers\SitePageController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -51,18 +52,21 @@ Route::middleware(['auth'])
                 Route::post('{site:id}/store', [SitePageController::class, 'store'])->name('store');
             });
 
-        Route::middleware(['verified'])
+        Route::prefix('channels')
+            ->as('channels.')
             ->group(function() {
-                Route::get('dashboard', function () {
-                    /** @var \App\Services\DashboardWidgetService $service */
-                    $service = app(\App\Services\DashboardWidgetService::class);
-                    return Inertia::render('Dashboard', [
-                        'widgets' => $service->resolve(),
-                    ]);
-                })->name('dashboard');
-
-                // One-click refresh to invalidate all dashboard widget caches for current team
-                Route::post('dashboard/refresh', \App\Http\Controllers\Dashboard\DashboardRefreshController::class)
-                    ->name('dashboard.refresh');
+                Route::get('/', [NotificationsChannelController::class, 'index'])->name('index');
             });
+
+        Route::get('dashboard', function () {
+            /** @var \App\Services\Dashboard\DashboardWidgetService $service */
+            $service = app(\App\Services\Dashboard\DashboardWidgetService::class);
+            return Inertia::render('Dashboard', [
+                'widgets' => $service->resolve(),
+            ]);
+        })->name('dashboard');
+
+        // One-click refresh to invalidate all dashboard widget caches for current team
+        Route::post('dashboard/refresh', DashboardRefreshController::class)
+            ->name('dashboard.refresh');
     });
